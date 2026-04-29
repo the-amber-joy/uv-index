@@ -19,3 +19,5 @@ Everything BEFORE [the add-search PR](https://github.com/the-amber-joy/amber-sam
 
 ## Important Note
 My API key for openuv is limited to 50 calls per day, so this won't work if it gets used a lot! I'm probably going to change over to my openweathermap API key instead since it allows 1000 calls per day.
+
+<a href="https://uvindex.amberjoy.dev/"><img width="1076" height="546" alt="Screenshot 2026-04-29 at 1 24 57 PM" src="https://github.com/user-attachments/assets/ba787d23-2ed5-4e2d-8162-30364740f1c5" /></a>
