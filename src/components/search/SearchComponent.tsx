@@ -12,7 +12,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { isEmpty } from "lodash";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { getCityByGeocode } from "../../api/getCityByGeocode";
 import { getLocationByCity } from "../../api/getLocationByCity";
@@ -30,6 +30,7 @@ export const SearchComponent = () => {
   const [cityName, setCityName] = useState<string>("");
   const [stateName, setStateName] = useState<string>("");
   const [isInvalid, setIsInvalid] = useState<boolean>(false);
+  const hasRequestedLocation = useRef(false);
 
   const handleSubmit = async () => {
     updateLoading(true);
@@ -57,30 +58,36 @@ export const SearchComponent = () => {
       .finally(() => updateLoading(false));
   };
 
-  const getPosition = async (position: any) => {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-
-    await getCityByGeocode({ lat, lon }).then((res) => {
-      updateLocation(res.data[0]);
-
-      getCurrentIndexByLocation({
-        lat,
-        lng: lon,
-      }).then((uvResponse) => {
-        if (uvResponse.status === 200) {
-          updateWeather(uvResponse.data);
-        }
-      });
-    });
-  };
   useEffect(() => {
+    if (hasRequestedLocation.current) {
+      return;
+    }
+    hasRequestedLocation.current = true;
+
+    const getPosition = async (position: any) => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      await getCityByGeocode({ lat, lon }).then((res) => {
+        updateLocation(res.data[0]);
+
+        getCurrentIndexByLocation({
+          lat,
+          lng: lon,
+        }).then((uvResponse) => {
+          if (uvResponse.status === 200) {
+            updateWeather(uvResponse.data);
+          }
+        });
+      });
+    };
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(getPosition);
     } else {
       console.log("Geolocation not supported");
     }
-  }, []);
+  }, [updateLocation, updateWeather]);
 
   return (
     <form
